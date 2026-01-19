@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Expense Manager</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ffecd2, #fcb69f);
+}
+
+.container {
+    width: 85%;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.card {
+    background: #ffffffcc;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+input, select {
+    width: 30%;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 8px 15px;
+    background: #6a89cc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4a69bd;
+}
+
+.summary p {
+    font-size: 18px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #dff9fb;
+}
+
+.food { color: green; }
+.travel { color: blue; }
+.bills { color: red; }
+.shopping { color: purple; }
+.others { color: orange; }
+
+.clear-btn {
+    background: #eb4d4b;
+}
+
+.clear-btn:hover {
+    background: #c0392b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>💰 Monthly Expense Manager</h1>
+
+    <!-- Income Section -->
+    <div class="card">
+        <h2>Set Monthly Income</h2>
+        <input type="number" id="income" placeholder="Enter income">
+        <button onclick="setIncome()">Save Income</button>
+    </div>
+
+    <!-- Expense Section -->
+    <div class="card">
+        <h2>Add Expense</h2>
+        <input type="text" id="expenseName" placeholder="Expense Name">
+        <input type="number" id="expenseAmount" placeholder="Amount">
+        <select id="category">
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Bills">Bills</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Others">Others</option>
+        </select>
+        <button onclick="addExpense()">Add</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="card summary">
+        <p>Total Income: ₹ <span id="totalIncome">0</span></p>
+        <p>Total Expenses: ₹ <span id="totalExpenses">0</span></p>
+        <p>Savings: ₹ <span id="savings">0</span></p>
+    </div>
+
+    <!-- Expense Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="expenseList"></tbody>
+    </table>
+
+    <br>
+    <button class="clear-btn" onclick="clearAll()">Clear All Expenses</button>
+</div>
+
+<script>
+let income = 0;
+let totalExpenses = 0;
+
+function setIncome() {
+    income = Number(document.getElementById("income").value);
+    document.getElementById("totalIncome").innerText = income;
+    calculateSavings();
+}
+
+function addExpense() {
+    let name = document.getElementById("expenseName").value;
+    let amount = Number(document.getElementById("expenseAmount").value);
+    let category = document.getElementById("category").value;
+
+    if (name === "" || amount <= 0) {
+        alert("Enter valid expense details");
+        return;
+    }
+
+    totalExpenses += amount;
+    document.getElementById("totalExpenses").innerText = totalExpenses;
+
+    let row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${name}</td>
+        <td>₹${amount}</td>
+        <td class="${category.toLowerCase()}">${category}</td>
+        <td><button onclick="deleteExpense(this, ${amount})">Delete</button></td>
+    `;
+    document.getElementById("expenseList").appendChild(row);
+
+    calculateSavings();
+
+    document.getElementById("expenseName").value = "";
+    document.getElementById("expenseAmount").value = "";
+}
+
+function deleteExpense(btn, amount) {
+    btn.parentElement.parentElement.remove();
+    totalExpenses -= amount;
+    document.getElementById("totalExpenses").innerText = totalExpenses;
+    calculateSavings();
+}
+
+function calculateSavings() {
+    let savings = income - totalExpenses;
+    let savingsEl = document.getElementById("savings");
+    savingsEl.innerText = savings;
+    savingsEl.style.color = savings >= 0 ? "green" : "red";
+}
+
+function clearAll() {
+    document.getElementById("expenseList").innerHTML = "";
+    totalExpenses = 0;
+    document.getElementById("totalExpenses").innerText = 0;
+    calculateSavings();
+}
+</script>
+
+</body>
+</html>
